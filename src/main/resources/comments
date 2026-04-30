@@ -1,0 +1,15 @@
+spring:
+  config:
+    import: "configserver:"
+  application:
+    name: cloud-config
+  cloud:
+    config:
+      profile: dev
+      uri: http://localhost:7070
+      username: TU_USUARIO_GIT
+      password: TU_CONTRASEÑA_GIT
+
+
+server:
+  port: 8083

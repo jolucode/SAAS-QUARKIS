@@ -2,14 +2,12 @@ package service.cloud.request.clientRequest.mongo.model;
 
 import lombok.Data;
 import org.bson.types.ObjectId;
-import org.springframework.data.mongodb.core.mapping.Document;
 import service.cloud.request.clientRequest.utils.exception.DateUtils;
 
 import javax.persistence.Id;
 import java.time.LocalDateTime;
 
 @Data
-@Document(collection = "guiaTicketsSunat") // Nombre de la colección en MongoDB
 public class GuiaTicket {
 
     @Id

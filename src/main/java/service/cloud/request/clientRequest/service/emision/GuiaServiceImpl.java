@@ -10,7 +10,6 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
 import jakarta.inject.Inject;
 import jakarta.enterprise.context.ApplicationScoped;
-import org.springframework.web.context.request.async.AsyncRequestTimeoutException;
 import reactor.core.Exceptions;
 import reactor.core.publisher.Mono;
 import service.cloud.request.clientRequest.config.ApplicationProperties;
@@ -310,10 +309,6 @@ public class GuiaServiceImpl extends BaseDocumentService implements GuiaInterfac
 
         if (real instanceof TimeoutException) {
             return "SUNAT no respondió dentro del tiempo esperado";
-        }
-
-        if (real instanceof AsyncRequestTimeoutException) {
-            return "La operación excedió el tiempo máximo de espera del servidor";
         }
 
         String msg = real.getMessage();

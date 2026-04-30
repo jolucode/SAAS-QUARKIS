@@ -4,7 +4,6 @@ package service.cloud.request.clientRequest.utils.files;
 import org.eclipse.persistence.internal.oxm.ByteArrayDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.StreamUtils;
 import service.cloud.request.clientRequest.dto.dto.TransacctionDTO;
 import service.cloud.request.clientRequest.exception.VenturaExcepcion;
 import service.cloud.request.clientRequest.utils.exception.error.IVenturaError;
@@ -130,7 +129,7 @@ public class UtilsFile {
              ByteArrayOutputStream bos = new ByteArrayOutputStream();
              ZipOutputStream zos = new ZipOutputStream(bos)) {
 
-            byte[] array = new byte[StreamUtils.BUFFER_SIZE];
+            byte[] array = new byte[8192];
             int read;
             zos.putNextEntry(new ZipEntry(documentName));
 

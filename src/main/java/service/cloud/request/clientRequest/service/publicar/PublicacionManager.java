@@ -2,14 +2,8 @@ package service.cloud.request.clientRequest.service.publicar;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import jakarta.inject.Inject;
-import org.springframework.http.HttpStatusCode;
-import org.springframework.http.MediaType;
 import jakarta.enterprise.context.ApplicationScoped;
-import org.springframework.web.reactive.function.BodyInserters;
-import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.reactive.function.client.WebClientRequestException;
-import org.springframework.web.reactive.function.client.WebClientResponseException;
+import jakarta.inject.Inject;
 import reactor.core.publisher.Mono;
 import reactor.util.retry.Retry;
 import service.cloud.request.clientRequest.config.ClientProperties;
@@ -18,6 +12,10 @@ import service.cloud.request.clientRequest.dto.dto.TransacctionDTO;
 import service.cloud.request.clientRequest.model.Client;
 
 import java.net.ConnectException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.net.UnknownHostException;
 import java.time.Duration;
 import java.util.concurrent.TimeoutException;
@@ -30,7 +28,7 @@ public class PublicacionManager {
     @Inject
     ClientProperties clientProperties;
 
-    private final WebClient webClient = WebClient.builder().build();
+    private final HttpClient httpClient = HttpClient.newHttpClient();
 
     public void publicarDocumento(TransacctionDTO transacctionDTO, String feId, TransaccionRespuesta transaccionRespuesta) {
         String documentoInfo = "";
@@ -89,16 +87,20 @@ public class PublicacionManager {
 //    }
 
     public Mono<String> publicarDocumentoWs(String apiUrl, DocumentoPublicado documentoPublicado) {
-        return webClient.post()
-                .uri(apiUrl + "/api/publicar")
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(documentoPublicado)
-                .retrieve()
-                .onStatus(
-                        HttpStatusCode::isError,
-                        response -> response.createException().flatMap(Mono::error)
-                )
-                .bodyToMono(String.class)
+        return Mono.fromCallable(() -> {
+                    String json = new com.google.gson.Gson().toJson(documentoPublicado);
+                    HttpRequest request = HttpRequest.newBuilder()
+                            .uri(URI.create(apiUrl + "/api/publicar"))
+                            .timeout(Duration.ofSeconds(24))
+                            .header("Content-Type", "application/json")
+                            .POST(HttpRequest.BodyPublishers.ofString(json))
+                            .build();
+                    HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+                    if (response.statusCode() >= 400) {
+                        throw new RuntimeException("HTTP " + response.statusCode() + ": " + response.body());
+                    }
+                    return response.body();
+                })
                 .timeout(Duration.ofSeconds(24))
                 .retryWhen(
                         Retry.backoff(2, Duration.ofSeconds(3))
@@ -113,33 +115,16 @@ public class PublicacionManager {
     }
 
     private boolean isRetryableError(Throwable throwable) {
-
-        if (throwable instanceof WebClientResponseException ex) {
-            int status = ex.getStatusCode().value();
-            return status == 408
-                    || status == 429
-                    || status == 500
-                    || status == 502
-                    || status == 503
-                    || status == 504;
-        }
-
-        if (throwable instanceof WebClientRequestException ex) {
-            Throwable cause = ex.getCause();
-            String message = ex.getMessage() == null ? "" : ex.getMessage().toLowerCase();
-
-            return cause instanceof UnknownHostException
-                    || cause instanceof ConnectException
-                    || cause instanceof TimeoutException
-                    || cause instanceof io.netty.handler.timeout.TimeoutException
-                    || message.contains("connection reset")
-                    || message.contains("prematurely closed");
-        }
-
         String message = throwable.getMessage() == null ? "" : throwable.getMessage().toLowerCase();
 
+        if (message.contains("http 408") || message.contains("http 429") || message.contains("http 500")
+                || message.contains("http 502") || message.contains("http 503") || message.contains("http 504")) {
+            return true;
+        }
+
         return throwable instanceof TimeoutException
-                || throwable instanceof io.netty.handler.timeout.TimeoutException
+                || throwable.getCause() instanceof UnknownHostException
+                || throwable.getCause() instanceof ConnectException
                 || message.contains("connection reset")
                 || message.contains("prematurely closed");
     }

@@ -1,6 +1,5 @@
 package service.cloud.request.clientRequest.utils;
 
-import io.micrometer.common.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import service.cloud.request.clientRequest.utils.exception.ValidationException;
@@ -117,7 +116,7 @@ public class ValidationHandler {
      */
     public void checkBasicInformation(String docIdentifier, String senderIdentifier, Date issueDate, String correoElectronico, String ccorreoElctroinico, boolean isContingencia) throws ValidationException {
 
-        if (StringUtils.isBlank(docIdentifier)) {
+        if (docIdentifier == null || docIdentifier.trim().isEmpty()) {
             throw new ValidationException(IVenturaError.ERROR_514);
         }
         if (IUBLConfig.SERIE_CORRELATIVE_LENGTH < docIdentifier.length()) {

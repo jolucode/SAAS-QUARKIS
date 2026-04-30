@@ -3,6 +3,8 @@ package service.cloud.request.clientRequest.notification.adapter;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.mail.Session;
 import jakarta.mail.Transport;
+import jakarta.inject.Named;
+import org.eclipse.microprofile.config.ConfigProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import jakarta.inject.Inject;
@@ -18,6 +20,7 @@ import java.util.Properties;
  * Requiere configurar spring.mail.* con credenciales de SES.
  */
 @ApplicationScoped
+@Named("sesProvider")
 public class SesProvider implements EmailProvider {
 
     private static final Logger log = LoggerFactory.getLogger(SesProvider.class);
@@ -27,10 +30,15 @@ public class SesProvider implements EmailProvider {
 
     @Override
     public String send(EmailMessage message) throws Exception {
-        String smtpHost = System.getProperty("spring.mail.host", "email-smtp.us-east-1.amazonaws.com");
-        String smtpPort = System.getProperty("spring.mail.port", "587");
-        String smtpUser = System.getProperty("spring.mail.username", "");
-        String smtpPass = System.getProperty("spring.mail.password", "");
+        String smtpHost = ConfigProvider.getConfig().getOptionalValue("quarkus.mailer.host", String.class)
+                .orElse(ConfigProvider.getConfig().getOptionalValue("spring.mail.host", String.class)
+                        .orElse("email-smtp.us-east-1.amazonaws.com"));
+        String smtpPort = ConfigProvider.getConfig().getOptionalValue("quarkus.mailer.port", String.class)
+                .orElse(ConfigProvider.getConfig().getOptionalValue("spring.mail.port", String.class).orElse("587"));
+        String smtpUser = ConfigProvider.getConfig().getOptionalValue("quarkus.mailer.username", String.class)
+                .orElse(ConfigProvider.getConfig().getOptionalValue("spring.mail.username", String.class).orElse(""));
+        String smtpPass = ConfigProvider.getConfig().getOptionalValue("quarkus.mailer.password", String.class)
+                .orElse(ConfigProvider.getConfig().getOptionalValue("spring.mail.password", String.class).orElse(""));
 
         Properties properties = new Properties();
         properties.put("mail.smtp.auth", "true");

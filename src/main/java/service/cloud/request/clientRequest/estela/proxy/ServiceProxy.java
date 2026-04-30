@@ -1,36 +1,35 @@
 package service.cloud.request.clientRequest.estela.proxy;
 
-import jakarta.inject.Inject;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatusCode;
-import org.springframework.http.MediaType;
 import jakarta.enterprise.context.ApplicationScoped;
-import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
+
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
 
 @ApplicationScoped
 public class ServiceProxy implements ServiceClient {
 
-    private final WebClient webClient;
-
-    @Inject
-    public ServiceProxy(WebClient webClient) {
-        this.webClient = webClient;
-    }
+    private final HttpClient httpClient = HttpClient.newHttpClient();
 
 
     @Override
     public Mono<String> sendSoapRequest(String url, String soapRequest) {
-        return webClient.post()
-                .uri(url)
-                .header(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_XML_VALUE)
-                .bodyValue(soapRequest)
-                .retrieve()
-                .onStatus(HttpStatusCode::isError, response ->
-                        response.bodyToMono(String.class)
-                                .flatMap(body -> Mono.error(new RuntimeException(body)))
-                )
-                .bodyToMono(String.class);
+        return Mono.fromCallable(() -> {
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(url))
+                    .timeout(Duration.ofSeconds(60))
+                    .header("Content-Type", "text/xml")
+                    .POST(HttpRequest.BodyPublishers.ofString(soapRequest))
+                    .build();
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() >= 400) {
+                throw new RuntimeException(response.body());
+            }
+            return response.body();
+        });
     }
 }
 

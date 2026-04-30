@@ -3,24 +3,25 @@ package service.cloud.request.clientRequest.notification.adapter;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import jakarta.inject.Inject;
-import org.springframework.context.annotation.Primary;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatusCode;
-import org.springframework.http.MediaType;
-import jakarta.enterprise.context.ApplicationScoped;
-import org.springframework.web.reactive.function.client.WebClient;
 import service.cloud.request.clientRequest.notification.config.NotificationProperties;
 import service.cloud.request.clientRequest.notification.dto.EmailMessage;
 
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-@Primary
 @ApplicationScoped
+@Named("sendGridProvider")
 public class SendGridProvider implements EmailProvider {
 
     private static final Logger log = LoggerFactory.getLogger(SendGridProvider.class);
@@ -30,7 +31,7 @@ public class SendGridProvider implements EmailProvider {
     @Inject
     private NotificationProperties props;
 
-    private final WebClient webClient = WebClient.builder().build();
+    private final HttpClient httpClient = HttpClient.newHttpClient();
     private final Gson gson = new Gson();
 
     @Override
@@ -43,25 +44,24 @@ public class SendGridProvider implements EmailProvider {
         String body = buildRequestBody(message);
         AtomicReference<String> messageId = new AtomicReference<>("sg-" + System.currentTimeMillis());
 
-        webClient.post()
-                .uri(SENDGRID_URL)
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + apiKey)
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(body)
-                .retrieve()
-                .onStatus(HttpStatusCode::isError, response ->
-                        response.bodyToMono(String.class).map(errorBody -> {
-                            String msg = extractSendGridError(errorBody);
-                            return new RuntimeException("SendGrid error [" + response.statusCode() + "]: " + msg);
-                        })
-                )
-                .toBodilessEntity()
-                .doOnSuccess(resp -> {
-                    String header = resp.getHeaders().getFirst("X-Message-Id");
-                    if (header != null) messageId.set(header);
-                    log.info("Email enviado via SendGrid a {} | X-Message-Id: {}", message.to(), messageId.get());
-                })
-                .block();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(SENDGRID_URL))
+                .timeout(Duration.ofSeconds(30))
+                .header("Authorization", "Bearer " + apiKey)
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(body))
+                .build();
+
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        if (response.statusCode() >= 400) {
+            String msg = extractSendGridError(response.body());
+            throw new RuntimeException("SendGrid error [" + response.statusCode() + "]: " + msg);
+        }
+        String header = response.headers().firstValue("X-Message-Id").orElse(null);
+        if (header != null) {
+            messageId.set(header);
+        }
+        log.info("Email enviado via SendGrid a {} | X-Message-Id: {}", message.to(), messageId.get());
 
         return messageId.get();
     }

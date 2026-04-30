@@ -1,3 +1,17 @@
+quarkus:
+  http:
+    port: 8083
+  mongodb:
+    connection-string: mongodb://localhost:27017
+    database: ventura2024
+  mailer:
+    host: email-smtp.us-east-1.amazonaws.com
+    port: 587
+    username: AKIA5VTQ6CZ4JBZRBDP3
+    password: BKF5EgoYlFcpSFvfcFnkYrVefNjZ5KNtgAaHYGQ2OZ5q
+    start-tls: REQUIRED
+    from: jolubere.92@gmail.com
+
 spring:
   data:
     mongodb:

@@ -107,6 +107,8 @@ public class CloudService implements CloudInterface {
             String jsonBody = JsonUtils.toJson(request);
             HttpResponse<String> response = Unirest.post(request.getUrlOnpremise() + "anexar")
                     .header("Content-Type", "application/json")
+                    .connectTimeout(5000)
+                    .socketTimeout(8000)
                     .body(jsonBody)
                     .asString();
             logger.info("Se envió de manera correcta al servidor OnPremise los documentos.");

@@ -107,6 +107,11 @@ public class NotificationManager {
 
     @Scheduled(every = "15s")
     public void processEmailQueue() {
+        try {
+            io.smallrye.context.SmallRyeContextManagerProvider.getManager().defaultThreadContext();
+        } catch (Exception | Error e) {
+            return; // contexto no disponible (shutdown en progreso)
+        }
         recoverStuckJobs();
 
         jobRepo.findByStatusAndNextRetryAtLessThanEqual(EmailJobStatus.PENDING, LocalDateTime.now())

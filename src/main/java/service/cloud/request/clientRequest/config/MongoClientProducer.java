@@ -11,7 +11,7 @@ public class MongoClientProducer {
 
     @Produces
     @ApplicationScoped
-    public MongoClient mongoClient(@ConfigProperty(name = "spring.data.mongodb.uri") String uri) {
+    public MongoClient mongoClient(@ConfigProperty(name = "quarkus.mongodb.connection-string") String uri) {
         return MongoClients.create(uri);
     }
 }

@@ -12,22 +12,6 @@ quarkus:
     start-tls: REQUIRED
     from: jolubere.92@gmail.com
 
-spring:
-  data:
-    mongodb:
-      uri: mongodb://localhost:27017/ventura2024
-      auto-index-creation: true
-
-  mail:
-    host: email-smtp.us-east-1.amazonaws.com
-    port: 587
-    username: AKIA5VTQ6CZ4JBZRBDP3
-    password: BKF5EgoYlFcpSFvfcFnkYrVefNjZ5KNtgAaHYGQ2OZ5q
-    #Nombre de usuario de IAM   #ses-smtp-user.20260430-071504
-    properties:
-      mail.smtp.auth: true
-      mail.smtp.starttls.enable: true
-
 scheduled:
   fixedDelay: 10000
 
@@ -109,6 +93,11 @@ notification:
   provider: SES
   from: "Prueba AWS SES <jolubere.92@gmail.com>"
   portalBaseUrl: "https://portal.venturasoluciones.com"
+  ses:
+    smtp:
+      auth: true
+      starttls:
+        enable: true
 
   sendgrid:
     apiKey: ""

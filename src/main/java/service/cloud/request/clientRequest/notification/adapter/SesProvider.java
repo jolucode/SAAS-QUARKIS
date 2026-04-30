@@ -17,7 +17,7 @@ import java.util.Properties;
 /**
  * Proveedor SES via SMTP relay.
  * Activo cuando notification.provider=SES en configProcesador.yml.
- * Requiere configurar spring.mail.* con credenciales de SES.
+ * Requiere configurar quarkus.mailer.* con credenciales de SES.
  */
 @ApplicationScoped
 @Named("sesProvider")
@@ -30,19 +30,18 @@ public class SesProvider implements EmailProvider {
 
     @Override
     public String send(EmailMessage message) throws Exception {
-        String smtpHost = ConfigProvider.getConfig().getOptionalValue("quarkus.mailer.host", String.class)
-                .orElse(ConfigProvider.getConfig().getOptionalValue("spring.mail.host", String.class)
-                        .orElse("email-smtp.us-east-1.amazonaws.com"));
-        String smtpPort = ConfigProvider.getConfig().getOptionalValue("quarkus.mailer.port", String.class)
-                .orElse(ConfigProvider.getConfig().getOptionalValue("spring.mail.port", String.class).orElse("587"));
-        String smtpUser = ConfigProvider.getConfig().getOptionalValue("quarkus.mailer.username", String.class)
-                .orElse(ConfigProvider.getConfig().getOptionalValue("spring.mail.username", String.class).orElse(""));
-        String smtpPass = ConfigProvider.getConfig().getOptionalValue("quarkus.mailer.password", String.class)
-                .orElse(ConfigProvider.getConfig().getOptionalValue("spring.mail.password", String.class).orElse(""));
+        String smtpHost = getConfigValue("quarkus.mailer.host", "notification.ses.smtp.host",
+                "email-smtp.us-east-1.amazonaws.com");
+        String smtpPort = getConfigValue("quarkus.mailer.port", "notification.ses.smtp.port", "587");
+        String smtpUser = getConfigValue("quarkus.mailer.username", "notification.ses.smtp.username", "");
+        String smtpPass = getConfigValue("quarkus.mailer.password", "notification.ses.smtp.password", "");
+        String smtpAuth = getConfigValue("notification.ses.smtp.auth", "quarkus.mailer.auth", "true");
+        String smtpStartTls = getConfigValue("notification.ses.smtp.starttls.enable",
+                "quarkus.mailer.start-tls", "true");
 
         Properties properties = new Properties();
-        properties.put("mail.smtp.auth", "true");
-        properties.put("mail.smtp.starttls.enable", "true");
+        properties.put("mail.smtp.auth", smtpAuth);
+        properties.put("mail.smtp.starttls.enable", smtpStartTls);
         properties.put("mail.smtp.host", smtpHost);
         properties.put("mail.smtp.port", smtpPort);
 
@@ -66,6 +65,12 @@ public class SesProvider implements EmailProvider {
 
         log.info("Email enviado via SES SMTP a {} | messageId: {}", message.to(), messageId);
         return messageId;
+    }
+
+    private String getConfigValue(String primaryKey, String fallbackKey, String defaultValue) {
+        return ConfigProvider.getConfig().getOptionalValue(primaryKey, String.class)
+                .orElse(ConfigProvider.getConfig().getOptionalValue(fallbackKey, String.class)
+                        .orElse(defaultValue));
     }
 
     @Override

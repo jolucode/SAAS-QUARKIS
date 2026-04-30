@@ -1,15 +1,3 @@
-spring:
-  config:
-    import: "configserver:"
-  application:
-    name: cloud-config
-  cloud:
-    config:
-      profile: dev
-      uri: http://localhost:8888
-      username: TU_USUARIO_GIT
-      password: TU_CONTRASEÑA_GIT
-
-
-server:
-  port: 8082
+quarkus:
+  http:
+    port: 8082

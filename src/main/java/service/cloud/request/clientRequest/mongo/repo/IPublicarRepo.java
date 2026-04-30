@@ -1,8 +1,8 @@
 package service.cloud.request.clientRequest.mongo.repo;
 
-import reactor.core.publisher.Mono;
+import io.smallrye.mutiny.Uni;
 import service.cloud.request.clientRequest.mongo.model.DocumentPublication;
 
 public interface IPublicarRepo {
-    Mono<DocumentPublication> save(DocumentPublication documentPublication);
+    Uni<DocumentPublication> save(DocumentPublication documentPublication);
 }

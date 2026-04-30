@@ -1,7 +1,7 @@
 package service.cloud.request.clientRequest.estela.proxy;
 
-import reactor.core.publisher.Mono;
+import io.smallrye.mutiny.Uni;
 
 public interface ServiceClient {
-    Mono<String> sendSoapRequest(String url, String soapRequest);
+    Uni<String> sendSoapRequest(String url, String soapRequest);
 }

@@ -1,10 +1,10 @@
 package service.cloud.request.clientRequest.estela.service;
 
+import io.smallrye.mutiny.Uni;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import jakarta.inject.Inject;
-import jakarta.enterprise.context.ApplicationScoped;
-import reactor.core.publisher.Mono;
 import service.cloud.request.clientRequest.estela.builder.DocumentBuilder;
 import service.cloud.request.clientRequest.estela.dto.FileRequestDTO;
 import service.cloud.request.clientRequest.estela.dto.FileResponseDTO;
@@ -16,11 +16,9 @@ import java.util.regex.Pattern;
 @ApplicationScoped
 public class DocumentBajaService {
 
-
     Logger logger = LoggerFactory.getLogger(DocumentBajaService.class);
 
     private final ServiceProxy serviceClient;
-
     private final DocumentBuilder soapRequestBuilder;
 
     @Inject
@@ -29,30 +27,26 @@ public class DocumentBajaService {
         this.soapRequestBuilder = soapRequestBuilder;
     }
 
-    public Mono<FileResponseDTO> processBajaRequest(String url, FileRequestDTO soapRequest) {
-
-        System.out.println("");
-        logger.info("EMISION BAJA EMSIION: " + soapRequest.getRucComprobante() + "-" + soapRequest.getTipoComprobante() + "-" +soapRequest.getSerieComprobante() + "-" + soapRequest.getNumeroComprobante());
-        String soapRequestXml = soapRequestBuilder.buildEmisionBajaSoapRequest(soapRequest).replaceAll("\\s+", " "); // Elimina saltos de línea, tabs, etc., y los reemplaza por un espacio
+    public Uni<FileResponseDTO> processBajaRequest(String url, FileRequestDTO soapRequest) {
+        String soapRequestXml = soapRequestBuilder.buildEmisionBajaSoapRequest(soapRequest).replaceAll("\\s+", " ");
+        logger.info("EMISION BAJA: {}-{}-{}-{}", soapRequest.getRucComprobante(), soapRequest.getTipoComprobante(),
+                soapRequest.getSerieComprobante(), soapRequest.getNumeroComprobante());
         logger.info(soapRequestXml);
-        System.out.println("");
 
         return serviceClient.sendSoapRequest(url, soapRequestBuilder.buildEmisionBajaSoapRequest(soapRequest))
-                .flatMap(this::handleBajaResponse)
-                .onErrorResume(error -> {
-
+                .chain(this::handleBajaResponse)
+                .onFailure().recoverWithUni(error -> {
                     String errorMessage = error.getMessage() != null ? error.getMessage() : "Unknown error";
-                    return Mono.just(new FileResponseDTO("Error", errorMessage, null, null));
+                    return Uni.createFrom().item(new FileResponseDTO("Error", errorMessage, null, null));
                 });
     }
 
-    private Mono<FileResponseDTO> handleBajaResponse(String soapResponse) {
+    private Uni<FileResponseDTO> handleBajaResponse(String soapResponse) {
         if (soapResponse.contains("<soap-env:Fault") || soapResponse.contains("<faultstring xml:lang=\"es-PE\">")) {
-            return Mono.error(new RuntimeException("Error en SUNAT: " + soapResponse));
+            return Uni.createFrom().failure(new RuntimeException("Error en SUNAT: " + soapResponse));
         }
-
         String ticket = extractTicketFromResponse(soapResponse);
-        return Mono.just(new FileResponseDTO("Success", "Ticket retrieved successfully", null, ticket));
+        return Uni.createFrom().item(new FileResponseDTO("Success", "Ticket retrieved successfully", null, ticket));
     }
 
     private String extractTicketFromResponse(String soapResponse) {
@@ -64,4 +58,3 @@ public class DocumentBajaService {
         throw new RuntimeException("No se encontró <ticket> en la respuesta SOAP.");
     }
 }
-

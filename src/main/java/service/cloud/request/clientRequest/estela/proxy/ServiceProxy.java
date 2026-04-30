@@ -1,7 +1,8 @@
 package service.cloud.request.clientRequest.estela.proxy;
 
+import io.smallrye.mutiny.Uni;
+import io.smallrye.mutiny.unchecked.Unchecked;
 import jakarta.enterprise.context.ApplicationScoped;
-import reactor.core.publisher.Mono;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -14,10 +15,9 @@ public class ServiceProxy implements ServiceClient {
 
     private final HttpClient httpClient = HttpClient.newHttpClient();
 
-
     @Override
-    public Mono<String> sendSoapRequest(String url, String soapRequest) {
-        return Mono.fromCallable(() -> {
+    public Uni<String> sendSoapRequest(String url, String soapRequest) {
+        return Uni.createFrom().item(Unchecked.supplier(() -> {
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(url))
                     .timeout(Duration.ofSeconds(60))
@@ -29,7 +29,6 @@ public class ServiceProxy implements ServiceClient {
                 throw new RuntimeException(response.body());
             }
             return response.body();
-        });
+        }));
     }
 }
-

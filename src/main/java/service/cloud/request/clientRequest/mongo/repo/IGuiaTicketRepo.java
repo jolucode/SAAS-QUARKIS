@@ -1,13 +1,12 @@
 package service.cloud.request.clientRequest.mongo.repo;
 
-import reactor.core.publisher.Mono;
+import io.smallrye.mutiny.Uni;
 import service.cloud.request.clientRequest.mongo.model.GuiaTicket;
 
 public interface IGuiaTicketRepo {
 
-    // Consulta personalizada para devolver solo el ticketSunat basado en rucEmisor y feId
-    Mono<GuiaTicket> findGuiaTicketByRucEmisorAndFeId(String rucEmisor, String feId);
-    Mono<Void> delete(GuiaTicket guiaTicket);
-    Mono<GuiaTicket> save(GuiaTicket guiaTicket);
+    Uni<GuiaTicket> findGuiaTicketByRucEmisorAndFeId(String rucEmisor, String feId);
+    Uni<Void> delete(GuiaTicket guiaTicket);
+    Uni<GuiaTicket> save(GuiaTicket guiaTicket);
 
 }

@@ -1,17 +1,16 @@
 package service.cloud.request.clientRequest.mongo.repo;
 
-import reactor.core.publisher.Mono;
+import io.smallrye.mutiny.Uni;
 import service.cloud.request.clientRequest.mongo.model.TransaccionBaja;
 
 public interface ITransaccionBajaRepository {
 
+    Uni<TransaccionBaja> findFirstByRucEmpresaOrderByFechaDescIddDesc(String rucEmpresa);
 
-    Mono<TransaccionBaja> findFirstByRucEmpresaOrderByFechaDescIddDesc(String rucEmpresa);
+    Uni<TransaccionBaja> findFirstByRucEmpresaAndSerie(String rucEmpresa, String serie);
 
-    Mono<TransaccionBaja> findFirstByRucEmpresaAndSerie(String rucEmpresa, String serie);
+    Uni<TransaccionBaja> findFirstByRucEmpresaAndDocId(String rucEmpresa, String docId);
 
-    // Nuevo método para buscar por rucEmpresa y docId
-    Mono<TransaccionBaja> findFirstByRucEmpresaAndDocId(String rucEmpresa, String docId);
-    Mono<TransaccionBaja> save(TransaccionBaja transaccionBaja);
+    Uni<TransaccionBaja> save(TransaccionBaja transaccionBaja);
 
 }

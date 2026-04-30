@@ -1,8 +1,8 @@
 package service.cloud.request.clientRequest.estela.service;
 
-import jakarta.inject.Inject;
+import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
-import reactor.core.publisher.Mono;
+import jakarta.inject.Inject;
 import service.cloud.request.clientRequest.estela.builder.DocumentBuilder;
 import service.cloud.request.clientRequest.estela.dto.FileRequestDTO;
 import service.cloud.request.clientRequest.estela.dto.FileResponseDTO;
@@ -16,7 +16,6 @@ import java.util.regex.Pattern;
 public class DocumentQueryService {
 
     private final ServiceProxy serviceClient;
-
     private final DocumentBuilder soapRequestBuilder;
 
     @Inject
@@ -25,30 +24,26 @@ public class DocumentQueryService {
         this.soapRequestBuilder = soapRequestBuilder;
     }
 
-    public Mono<FileResponseDTO> processAndSaveFile(String url, FileRequestDTO soapRequest) {
+    public Uni<FileResponseDTO> processAndSaveFile(String url, FileRequestDTO soapRequest) {
         String body = "BIZLINKS".equalsIgnoreCase(soapRequest.getIntegracionWs())
                 ? soapRequestBuilder.buildConsultaSoapRequestBizlinks(soapRequest)
                 : soapRequestBuilder.buildConsultaSoapRequest(soapRequest);
         System.out.println(body);
         return serviceClient.sendSoapRequest(url, body)
-                .flatMap(this::handleSoapResponse)
-                .onErrorResume(error -> {
+                .chain(this::handleSoapResponse)
+                .onFailure().recoverWithUni(error -> {
                     String errorMessage = error.getMessage() != null ? error.getMessage() : "Unknown error";
-                    return Mono.just(new FileResponseDTO("Error", errorMessage, null,null));
+                    return Uni.createFrom().item(new FileResponseDTO("Error", errorMessage, null, null));
                 });
     }
 
-    private Mono<FileResponseDTO> handleSoapResponse(String soapResponse) {
+    private Uni<FileResponseDTO> handleSoapResponse(String soapResponse) {
         if (soapResponse.contains("<soap-env:Fault") || soapResponse.contains("<faultstring xml:lang=\"es-PE\">")) {
-            return Mono.error(new RuntimeException("Error en SUNAT: " + soapResponse));
+            return Uni.createFrom().failure(new RuntimeException("Error en SUNAT: " + soapResponse));
         }
         String base64Content = extractApplicationResponseWithRegex(soapResponse);
-        byte[] originalBytes = convertFromBase64(base64Content);
-        return Mono.just(new FileResponseDTO("Success", "File processed successfully", originalBytes,null));
-    }
-
-    private static byte[] convertFromBase64(String base64String) {
-        return Base64.getDecoder().decode(base64String);
+        byte[] originalBytes = Base64.getDecoder().decode(base64Content);
+        return Uni.createFrom().item(new FileResponseDTO("Success", "File processed successfully", originalBytes, null));
     }
 
     private String extractApplicationResponseWithRegex(String soapResponse) {
@@ -57,8 +52,6 @@ public class DocumentQueryService {
         if (matcher.find()) {
             return matcher.group(1);
         }
-
         throw new RuntimeException("No se encontró <applicationResponse> en la respuesta SOAP.");
     }
 }
-

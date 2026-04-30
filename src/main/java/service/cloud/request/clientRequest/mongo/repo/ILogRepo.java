@@ -1,12 +1,12 @@
 package service.cloud.request.clientRequest.mongo.repo;
 
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
+import io.smallrye.mutiny.Multi;
+import io.smallrye.mutiny.Uni;
 import service.cloud.request.clientRequest.mongo.model.Log;
 
 public interface ILogRepo {
-    Mono<Log> save(Log log);
-    Mono<Log> findById(String id);
-    Flux<Log> findAll();
-    Mono<Void> deleteById(String id);
+    Uni<Log> save(Log log);
+    Uni<Log> findById(String id);
+    Multi<Log> findAll();
+    Uni<Void> deleteById(String id);
 }

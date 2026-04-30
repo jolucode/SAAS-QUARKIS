@@ -1,10 +1,10 @@
 package service.cloud.request.clientRequest.service.extractor;
 
+import io.smallrye.mutiny.Uni;
 import jakarta.ws.rs.core.Response;
-import reactor.core.publisher.Mono;
 
 public interface CloudInterface {
 
-    Mono<Response> proccessDocument(String ejemploString);
+    Uni<Response> proccessDocument(String ejemploString);
 
 }

@@ -1,6 +1,6 @@
 package service.cloud.request.clientRequest.service.emision.interfac;
 
-import reactor.core.publisher.Mono;
+import io.smallrye.mutiny.Uni;
 import service.cloud.request.clientRequest.dto.TransaccionRespuesta;
 import service.cloud.request.clientRequest.dto.dto.TransacctionDTO;
 
@@ -20,6 +20,6 @@ import service.cloud.request.clientRequest.dto.dto.TransacctionDTO;
 public interface GuiaInterface {
 
 
-    public Mono<TransaccionRespuesta> transactionRemissionGuideDocumentRestReactive(TransacctionDTO transaction, String docType) throws Exception;
+    public Uni<TransaccionRespuesta> transactionRemissionGuideDocumentRestReactive(TransacctionDTO transaction, String docType) throws Exception;
 
 }

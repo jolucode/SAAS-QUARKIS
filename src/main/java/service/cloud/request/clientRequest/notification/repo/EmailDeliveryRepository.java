@@ -1,11 +1,12 @@
 package service.cloud.request.clientRequest.notification.repo;
 
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
+import io.smallrye.mutiny.Multi;
+import io.smallrye.mutiny.Uni;
 import service.cloud.request.clientRequest.notification.model.EmailDelivery;
 
 public interface EmailDeliveryRepository {
 
-    Flux<EmailDelivery> findByJobId(String jobId);
-    Mono<EmailDelivery> save(EmailDelivery emailDelivery);
+    Multi<EmailDelivery> findByJobId(String jobId);
+
+    Uni<EmailDelivery> save(EmailDelivery emailDelivery);
 }

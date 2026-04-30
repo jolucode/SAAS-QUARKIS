@@ -1,5 +1,6 @@
 package service.cloud.request.clientRequest.controller;
 
+import io.smallrye.mutiny.Uni;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
@@ -7,7 +8,6 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import reactor.core.publisher.Mono;
 import service.cloud.request.clientRequest.service.extractor.CloudService;
 
 @Path("/")
@@ -20,7 +20,7 @@ public class CloudController {
 
     @POST
     @Path("/procesar")
-    public Mono<Response> processDocument(String stringRequestOnpremise) {
+    public Uni<Response> processDocument(String stringRequestOnpremise) {
         return cloudService.proccessDocument(stringRequestOnpremise);
     }
 }

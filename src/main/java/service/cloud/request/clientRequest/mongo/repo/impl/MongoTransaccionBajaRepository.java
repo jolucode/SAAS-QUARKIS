@@ -5,9 +5,10 @@ import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Sorts;
 import com.mongodb.reactivestreams.client.MongoClient;
 import com.mongodb.reactivestreams.client.MongoCollection;
+import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.bson.Document;
-import reactor.core.publisher.Mono;
+import org.reactivestreams.FlowAdapters;
 import service.cloud.request.clientRequest.mongo.model.TransaccionBaja;
 import service.cloud.request.clientRequest.mongo.repo.ITransaccionBajaRepository;
 
@@ -20,27 +21,31 @@ public class MongoTransaccionBajaRepository implements ITransaccionBajaRepositor
         this.collection = mongoClient.getDatabase("ventura2024").getCollection("transaccion_baja");
     }
 
-    public Mono<TransaccionBaja> findFirstByRucEmpresaOrderByFechaDescIddDesc(String rucEmpresa) {
-        return Mono.from(collection.find(Filters.eq("rucEmpresa", rucEmpresa))
-                        .sort(Sorts.orderBy(Sorts.descending("fecha"), Sorts.descending("idd"))).first())
+    public Uni<TransaccionBaja> findFirstByRucEmpresaOrderByFechaDescIddDesc(String rucEmpresa) {
+        return Uni.createFrom().publisher(FlowAdapters.toFlowPublisher(
+                        collection.find(Filters.eq("rucEmpresa", rucEmpresa))
+                                .sort(Sorts.orderBy(Sorts.descending("fecha"), Sorts.descending("idd"))).first()))
                 .map(this::toModel);
     }
 
-    public Mono<TransaccionBaja> findFirstByRucEmpresaAndSerie(String rucEmpresa, String serie) {
-        return Mono.from(collection.find(Filters.and(Filters.eq("rucEmpresa", rucEmpresa), Filters.eq("serie", serie)))
-                        .sort(Sorts.orderBy(Sorts.descending("fechaHora"), Sorts.descending("idd"))).first())
+    public Uni<TransaccionBaja> findFirstByRucEmpresaAndSerie(String rucEmpresa, String serie) {
+        return Uni.createFrom().publisher(FlowAdapters.toFlowPublisher(
+                        collection.find(Filters.and(Filters.eq("rucEmpresa", rucEmpresa), Filters.eq("serie", serie)))
+                                .sort(Sorts.orderBy(Sorts.descending("fechaHora"), Sorts.descending("idd"))).first()))
                 .map(this::toModel);
     }
 
-    public Mono<TransaccionBaja> findFirstByRucEmpresaAndDocId(String rucEmpresa, String docId) {
-        return Mono.from(collection.find(Filters.and(Filters.eq("rucEmpresa", rucEmpresa), Filters.eq("docId", docId)))
-                        .sort(Sorts.orderBy(Sorts.descending("fechaHora"), Sorts.descending("idd"))).first())
+    public Uni<TransaccionBaja> findFirstByRucEmpresaAndDocId(String rucEmpresa, String docId) {
+        return Uni.createFrom().publisher(FlowAdapters.toFlowPublisher(
+                        collection.find(Filters.and(Filters.eq("rucEmpresa", rucEmpresa), Filters.eq("docId", docId)))
+                                .sort(Sorts.orderBy(Sorts.descending("fechaHora"), Sorts.descending("idd"))).first()))
                 .map(this::toModel);
     }
 
-    public Mono<TransaccionBaja> save(TransaccionBaja transaccionBaja) {
+    public Uni<TransaccionBaja> save(TransaccionBaja transaccionBaja) {
         Document d = Document.parse(gson.toJson(transaccionBaja));
-        return Mono.from(collection.insertOne(d)).thenReturn(transaccionBaja);
+        return Uni.createFrom().publisher(FlowAdapters.toFlowPublisher(collection.insertOne(d)))
+                .replaceWith(transaccionBaja);
     }
 
     private TransaccionBaja toModel(Document d) {

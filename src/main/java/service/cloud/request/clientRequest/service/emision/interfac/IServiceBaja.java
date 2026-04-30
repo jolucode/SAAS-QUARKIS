@@ -1,7 +1,7 @@
 package service.cloud.request.clientRequest.service.emision.interfac;
 
+import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
-import reactor.core.publisher.Mono;
 import service.cloud.request.clientRequest.dto.TransaccionRespuesta;
 import service.cloud.request.clientRequest.dto.dto.TransacctionDTO;
 
@@ -24,7 +24,7 @@ public interface IServiceBaja {
 
     /**dar de baja*/
     // INTERFAZ (IServiceBaja.java)
-    Mono<TransaccionRespuesta> transactionVoidedDocument(TransacctionDTO transaction, String doctype);
+    Uni<TransaccionRespuesta> transactionVoidedDocument(TransacctionDTO transaction, String doctype);
 
 
 }

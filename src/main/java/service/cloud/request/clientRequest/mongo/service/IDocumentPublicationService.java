@@ -1,22 +1,16 @@
 package service.cloud.request.clientRequest.mongo.service;
 
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
+import io.smallrye.mutiny.Multi;
+import io.smallrye.mutiny.Uni;
 import service.cloud.request.clientRequest.mongo.model.DocumentPublication;
 
 public interface IDocumentPublicationService {
 
-
-  Mono<DocumentPublication> saveLogEntryToMongoDB(DocumentPublication logEntry);
-  Mono<DocumentPublication> save(DocumentPublication Log);
-
-  Mono<DocumentPublication> udpate(DocumentPublication Log, String id);
-
-  Flux<DocumentPublication> findAll();
-
-  Mono<DocumentPublication> findById(String id);
-
-  Mono<Boolean> delete(String id);
-
+    Uni<DocumentPublication> saveLogEntryToMongoDB(DocumentPublication logEntry);
+    Uni<DocumentPublication> save(DocumentPublication doc);
+    Uni<DocumentPublication> udpate(DocumentPublication doc, String id);
+    Multi<DocumentPublication> findAll();
+    Uni<DocumentPublication> findById(String id);
+    Uni<Boolean> delete(String id);
 
 }

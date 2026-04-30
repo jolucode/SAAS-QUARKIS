@@ -1,10 +1,11 @@
 package service.cloud.request.clientRequest.notification.repo;
 
-import reactor.core.publisher.Mono;
+import io.smallrye.mutiny.Uni;
 import service.cloud.request.clientRequest.notification.model.EmailSuppression;
 
 public interface EmailSuppressionRepository {
 
-    Mono<EmailSuppression> findByEmail(String email);
-    Mono<EmailSuppression> save(EmailSuppression emailSuppression);
+    Uni<EmailSuppression> findByEmail(String email);
+
+    Uni<EmailSuppression> save(EmailSuppression emailSuppression);
 }

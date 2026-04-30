@@ -1,7 +1,7 @@
 package service.cloud.request.clientRequest.service.emision.interfac;
 
+import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
-import reactor.core.publisher.Mono;
 import service.cloud.request.clientRequest.dto.TransaccionRespuesta;
 import service.cloud.request.clientRequest.dto.dto.TransacctionDTO;
 
@@ -23,7 +23,7 @@ public interface IServiceEmision {
 
 
     /**emision*/
-    public Mono<TransaccionRespuesta> transactionDocument(TransacctionDTO transaction, String doctype);
+    public Uni<TransaccionRespuesta> transactionDocument(TransacctionDTO transaction, String doctype);
 
 
 

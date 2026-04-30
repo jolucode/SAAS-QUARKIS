@@ -1,13 +1,15 @@
 package service.cloud.request.clientRequest.config;
 
 import org.modelmapper.ModelMapper;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Produces;
+import jakarta.inject.Named;
 
-@Configuration
+@ApplicationScoped
 public class MapperConfig {
 
-    @Bean("defaultMapper")
+    @Produces
+    @Named("defaultMapper")
     public ModelMapper defaultMapper() {
         return new ModelMapper();
     }

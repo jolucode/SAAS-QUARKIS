@@ -1,14 +1,14 @@
 package service.cloud.request.clientRequest.mongo.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import jakarta.enterprise.context.ApplicationScoped;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import service.cloud.request.clientRequest.mongo.model.DocumentPublication;
 import service.cloud.request.clientRequest.mongo.repo.IPublicarRepo;
 import service.cloud.request.clientRequest.mongo.service.IDocumentPublicationService;
 
-@Service
+@ApplicationScoped
 @RequiredArgsConstructor
 public class DocumentPublicationServiceImpl implements IDocumentPublicationService {
 

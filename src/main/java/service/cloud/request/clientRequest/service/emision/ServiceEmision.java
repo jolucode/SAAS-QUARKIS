@@ -3,8 +3,8 @@ package service.cloud.request.clientRequest.service.emision;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import jakarta.inject.Inject;
+import jakarta.enterprise.context.ApplicationScoped;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 import reactor.util.function.Tuples;
@@ -57,29 +57,29 @@ import java.util.*;
  * -----------------------------------------------------------------------------
  */
 
-@Service
+@ApplicationScoped
 public class ServiceEmision implements IServiceEmision {
 
     Logger logger = LoggerFactory.getLogger(ServiceEmision.class);
 
-    @Autowired
+    @Inject
     ClientProperties clientProperties;
 
     private final String docUUID = "123123";
 
-    @Autowired
+    @Inject
     ApplicationProperties applicationProperties;
 
-    @Autowired
+    @Inject
     ProcessorCoreInterface processorCoreInterface;
 
-    @Autowired
+    @Inject
     DocumentFormatInterface documentFormatInterface;
 
-    @Autowired
+    @Inject
     DocumentEmissionService documentEmissionService;
 
-    @Autowired
+    @Inject
     private DocumentQueryService documentQueryService;
 
     @Override

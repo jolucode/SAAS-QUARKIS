@@ -1,8 +1,8 @@
 package service.cloud.request.clientRequest.mongo.repo;
 
-
-import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
+import reactor.core.publisher.Mono;
 import service.cloud.request.clientRequest.mongo.model.DocumentPublication;
 
-public interface IPublicarRepo extends ReactiveMongoRepository<DocumentPublication, String> {
+public interface IPublicarRepo {
+    Mono<DocumentPublication> save(DocumentPublication documentPublication);
 }

@@ -1,11 +1,11 @@
 package service.cloud.request.clientRequest.estela.controller;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import reactor.core.publisher.Mono;
 import service.cloud.request.clientRequest.estela.dto.FileRequestDTO;
 import service.cloud.request.clientRequest.estela.dto.FileResponseDTO;
@@ -14,8 +14,9 @@ import service.cloud.request.clientRequest.estela.service.DocumentBajaService;
 import service.cloud.request.clientRequest.estela.service.DocumentQueryService;
 import service.cloud.request.clientRequest.estela.service.DocumentEmissionService;
 
-@RestController
-@RequestMapping("/api/documents")
+@Path("/api/documents")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
 public class DocumentProcessingController {
 
     private final DocumentEmissionService documentEmissionService;
@@ -30,8 +31,9 @@ public class DocumentProcessingController {
         this.documentBajaQueryService = documentBajaQueryService;
     }
 
-    @PostMapping("/upload")
-    public Mono<ResponseEntity<FileResponseDTO>> processDocumentEmission(@RequestBody FileRequestDTO requestDTO) {
+    @POST
+    @Path("/upload")
+    public Mono<Response> processDocumentEmission(FileRequestDTO requestDTO) {
         String url;
 
         // Determinar la URL según el valor del campo 'service' en requestDTO
@@ -53,31 +55,34 @@ public class DocumentProcessingController {
                 break;
             default:
                 // En caso de que el servicio no sea uno de los conocidos, puedes asignar una URL por defecto o lanzar un error.
-                return Mono.just(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new FileResponseDTO("Error", "Invalid service", null, null)));
+                return Mono.just(Response.status(Response.Status.BAD_REQUEST).entity(new FileResponseDTO("Error", "Invalid service", null, null)).build());
         }
 
         // Llamar al servicio con la URL determinada
         return documentEmissionService.processDocumentEmission(url, requestDTO)
-                .map(response -> ResponseEntity.ok(response))
-                .defaultIfEmpty(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
+                .map(response -> Response.ok(response).build())
+                .defaultIfEmpty(Response.status(Response.Status.INTERNAL_SERVER_ERROR).build());
     }
 
 
-    @PostMapping("/consulta")
-    public Mono<ResponseEntity<FileResponseDTO>> processDocumentQuery(@RequestBody FileRequestDTO requestDTO) {
+    @POST
+    @Path("/consulta")
+    public Mono<Response> processDocumentQuery(FileRequestDTO requestDTO) {
         return documentQueryService.processAndSaveFile("h-ttps://proy.ose.tci.net.pe/ol-ti-itcpe-2/ws/billService?wsdl", requestDTO)
-                .map(response -> ResponseEntity.ok(response)).defaultIfEmpty(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
+                .map(response -> Response.ok(response).build()).defaultIfEmpty(Response.status(Response.Status.INTERNAL_SERVER_ERROR).build());
     }
 
-    @PostMapping("/baja")
-    public Mono<ResponseEntity<FileResponseDTO>> processDocumentBaja(@RequestBody FileRequestDTO requestDTO) {
+    @POST
+    @Path("/baja")
+    public Mono<Response> processDocumentBaja(FileRequestDTO requestDTO) {
         return documentBajaService.processBajaRequest("h-ttps://proy.ose.tci.net.pe/ol-ti-itcpe-2/ws/billService?wsdl", requestDTO)
-                .map(response -> ResponseEntity.ok(response)).defaultIfEmpty(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
+                .map(response -> Response.ok(response).build()).defaultIfEmpty(Response.status(Response.Status.INTERNAL_SERVER_ERROR).build());
     }
 
-    @PostMapping("/consultabaja")
-    public Mono<ResponseEntity<FileResponseDTO>> processDocumentBajaConsult(@RequestBody FileRequestDTO requestDTO) {
+    @POST
+    @Path("/consultabaja")
+    public Mono<Response> processDocumentBajaConsult(FileRequestDTO requestDTO) {
         return documentBajaQueryService.processAndSaveFile("h-ttps://proy.ose.tci.net.pe/ol-ti-itcpe-2/ws/billService?wsdl", requestDTO)
-                .map(response -> ResponseEntity.ok(response)).defaultIfEmpty(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
+                .map(response -> Response.ok(response).build()).defaultIfEmpty(Response.status(Response.Status.INTERNAL_SERVER_ERROR).build());
     }
 }

@@ -3,11 +3,11 @@ package service.cloud.request.clientRequest.handler.refactorPdf.config;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
-import org.springframework.context.annotation.Configuration;
+import jakarta.enterprise.context.ApplicationScoped;
 
 import java.io.*;
 
-@Configuration
+@ApplicationScoped
 public class JasperReportConfig {
 
     // Método genérico para obtener un reporte según RUC y tipo de documento

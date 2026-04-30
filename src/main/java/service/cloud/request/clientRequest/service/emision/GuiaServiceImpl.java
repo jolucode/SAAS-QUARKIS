@@ -8,8 +8,8 @@ import io.joshworks.restclient.http.HttpResponse;
 import io.joshworks.restclient.http.Unirest;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import jakarta.inject.Inject;
+import jakarta.enterprise.context.ApplicationScoped;
 import org.springframework.web.context.request.async.AsyncRequestTimeoutException;
 import reactor.core.Exceptions;
 import reactor.core.publisher.Mono;
@@ -74,7 +74,7 @@ import java.util.zip.ZipOutputStream;
  * -----------------------------------------------------------------------------
  */
 
-@Service
+@ApplicationScoped
 public class GuiaServiceImpl extends BaseDocumentService implements GuiaInterface {
 
     private static final Logger logger = LoggerFactory.getLogger(GuiaServiceImpl.class);
@@ -87,19 +87,19 @@ public class GuiaServiceImpl extends BaseDocumentService implements GuiaInterfac
     private static final String EXT_ZIP = "zip";
     private static final String EMPTY = "";
     private static final GuiaTicket EMPTY_TICKET = new GuiaTicket();
-    @Autowired
+    @Inject
     private ClientProperties clientProperties;
 
-    @Autowired
+    @Inject
     private ApplicationProperties applicationProperties;
 
-    @Autowired
+    @Inject
     private ProcessorCoreInterface processorCoreInterface;
 
-    @Autowired
+    @Inject
     private DocumentFormatInterface documentFormatInterface;
 
-    @Autowired
+    @Inject
     private IGuiaTicketRepo guiaTicketRepo;
 
     private String docUUID;

@@ -2,8 +2,8 @@ package service.cloud.request.clientRequest.service.core;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import jakarta.inject.Inject;
+import jakarta.enterprise.context.ApplicationScoped;
 import service.cloud.request.clientRequest.dto.TransaccionRespuesta;
 import service.cloud.request.clientRequest.dto.dto.TransacctionDTO;
 import service.cloud.request.clientRequest.dto.finalClass.ConfigData;
@@ -16,14 +16,14 @@ import service.cloud.request.clientRequest.utils.SunatResponseUtils;
 import service.cloud.request.clientRequest.utils.exception.PDFReportException;
 import service.cloud.request.clientRequest.utils.exception.error.IVenturaError;
 
-@Service
+@ApplicationScoped
 public class ProcessorCoreImpl implements ProcessorCoreInterface {
 
     Logger logger = LoggerFactory.getLogger(ProcessorCoreImpl.class);
 
     private final String docUUID = Constants.DOC_UUID;
 
-    @Autowired
+    @Inject
     DocumentFormatInterface documentFormatInterface;
 
 

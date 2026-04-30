@@ -2,9 +2,10 @@ package service.cloud.request.clientRequest.notification.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import io.quarkus.scheduler.Scheduled;
+import jakarta.enterprise.context.ApplicationScoped;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 import service.cloud.request.clientRequest.config.ClientProperties;
@@ -21,7 +22,7 @@ import service.cloud.request.clientRequest.notification.repo.EmailJobRepository;
 import java.time.LocalDateTime;
 import java.util.Map;
 
-@Service
+@ApplicationScoped
 public class NotificationManager {
 
     private static final Logger log = LoggerFactory.getLogger(NotificationManager.class);
@@ -32,28 +33,29 @@ public class NotificationManager {
     private static final int WORKER_PARALLELISM = 5;
     private static final int STUCK_JOB_MINUTES = 10;
 
-    @Autowired
+    @Inject
     private EmailJobRepository jobRepo;
 
-    @Autowired
+    @Inject
     private EmailDeliveryRepository deliveryRepo;
 
-    @Autowired
+    @Inject
     private EmailValidatorService validator;
 
-    @Autowired
+    @Inject
     private EmailSuppressionService suppressionService;
 
-    @Autowired
+    @Inject
     private EmailTemplateService templateService;
 
-    @Autowired
+    @Inject
     private NotificationProperties notificationProperties;
 
-    @Autowired
+    @Inject
     private ClientProperties clientProperties;
 
-    @Autowired
+    @Inject
+    @Named("sesProvider")
     private EmailProvider emailProvider;
 
     // ──────────────────────────────────────────────
@@ -111,7 +113,7 @@ public class NotificationManager {
     // Worker programado
     // ──────────────────────────────────────────────
 
-    @Scheduled(fixedDelay = 15_000)
+    @Scheduled(every = "15s")
     public void processEmailQueue() {
         recoverStuckJobs();
 

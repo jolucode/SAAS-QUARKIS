@@ -5,13 +5,12 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import jakarta.inject.Inject;
 import org.springframework.context.annotation.Primary;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Component;
+import jakarta.enterprise.context.ApplicationScoped;
 import org.springframework.web.reactive.function.client.WebClient;
 import service.cloud.request.clientRequest.notification.config.NotificationProperties;
 import service.cloud.request.clientRequest.notification.dto.EmailMessage;
@@ -21,15 +20,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Primary
-@Component
-@ConditionalOnProperty(name = "notification.provider", havingValue = "SENDGRID", matchIfMissing = true)
+@ApplicationScoped
 public class SendGridProvider implements EmailProvider {
 
     private static final Logger log = LoggerFactory.getLogger(SendGridProvider.class);
     private static final String SENDGRID_URL = "https://api.sendgrid.com/v3/mail/send";
     private static final Pattern FROM_PATTERN = Pattern.compile("^(.+?)\\s*<([^>]+)>$");
 
-    @Autowired
+    @Inject
     private NotificationProperties props;
 
     private final WebClient webClient = WebClient.builder().build();

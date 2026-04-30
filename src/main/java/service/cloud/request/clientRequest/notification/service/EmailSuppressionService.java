@@ -2,8 +2,8 @@ package service.cloud.request.clientRequest.notification.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import jakarta.inject.Inject;
+import jakarta.enterprise.context.ApplicationScoped;
 import reactor.core.publisher.Mono;
 import service.cloud.request.clientRequest.notification.model.EmailSuppression;
 import service.cloud.request.clientRequest.notification.model.SuppressionReason;
@@ -11,12 +11,12 @@ import service.cloud.request.clientRequest.notification.repo.EmailSuppressionRep
 
 import java.time.LocalDateTime;
 
-@Service
+@ApplicationScoped
 public class EmailSuppressionService {
 
     private static final Logger log = LoggerFactory.getLogger(EmailSuppressionService.class);
 
-    @Autowired
+    @Inject
     private EmailSuppressionRepository suppressionRepo;
 
     public Mono<Boolean> isSuppressed(String email) {

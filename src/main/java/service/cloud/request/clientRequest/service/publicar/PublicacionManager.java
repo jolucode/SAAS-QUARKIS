@@ -2,10 +2,10 @@ package service.cloud.request.clientRequest.service.publicar;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.inject.Inject;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Service;
+import jakarta.enterprise.context.ApplicationScoped;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
@@ -22,12 +22,12 @@ import java.net.UnknownHostException;
 import java.time.Duration;
 import java.util.concurrent.TimeoutException;
 
-@Service
+@ApplicationScoped
 public class PublicacionManager {
 
     Logger logger = LoggerFactory.getLogger(PublicacionManager.class);
 
-    @Autowired
+    @Inject
     ClientProperties clientProperties;
 
     private final WebClient webClient = WebClient.builder().build();

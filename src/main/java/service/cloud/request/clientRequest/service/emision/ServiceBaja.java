@@ -2,10 +2,8 @@ package service.cloud.request.clientRequest.service.emision;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.FindAndModifyOptions;
-import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
-import org.springframework.stereotype.Service;
+import jakarta.inject.Inject;
+import jakarta.enterprise.context.ApplicationScoped;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 import reactor.util.retry.Retry;
@@ -41,9 +39,6 @@ import service.cloud.request.clientRequest.utils.files.DocumentConverterUtils;
 import service.cloud.request.clientRequest.utils.files.UtilsFile;
 import service.cloud.request.clientRequest.xmlFormatSunat.xsd.summarydocuments_1.SummaryDocumentsType;
 import service.cloud.request.clientRequest.xmlFormatSunat.xsd.voideddocuments_1.VoidedDocumentsType;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.mongodb.core.query.Update;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -70,20 +65,18 @@ import java.util.zip.ZipOutputStream;
  * -----------------------------------------------------------------------------
  */
 
-@Service
+@ApplicationScoped
 public class ServiceBaja implements IServiceBaja {
 
     private static final Logger logger = LoggerFactory.getLogger(ServiceBaja.class);
 
     private static final TransaccionBaja EMPTY_BAJA = new TransaccionBaja();
 
-    @Autowired private ClientProperties clientProperties;
-    @Autowired private ApplicationProperties applicationProperties;
-    @Autowired private ITransaccionBajaRepository iTransaccionBajaRepository;
-    @Autowired private DocumentBajaQueryService documentBajaQueryService;
-    @Autowired private DocumentBajaService documentBajaService;
-    @Autowired
-    private ReactiveMongoTemplate reactiveMongoTemplate;
+    @Inject private ClientProperties clientProperties;
+    @Inject private ApplicationProperties applicationProperties;
+    @Inject private ITransaccionBajaRepository iTransaccionBajaRepository;
+    @Inject private DocumentBajaQueryService documentBajaQueryService;
+    @Inject private DocumentBajaService documentBajaService;
 
     private static final String docUUID = "123123";
 
@@ -149,9 +142,7 @@ public class ServiceBaja implements IServiceBaja {
                                             completarLog(log, response, transaction, attachmentPath);
                                             response.setLogDTO(log);
 
-                                            // --- GUARDAR LOG EN MONGO DE MANERA REACTIVA ---
-                                            return reactiveMongoTemplate.save(log)
-                                                    .thenReturn(response);
+                                            return Mono.just(response);
 
                                         })
                                         .onErrorResume(ex -> {
@@ -161,9 +152,7 @@ public class ServiceBaja implements IServiceBaja {
                                             completarLog(log, errResp, transaction, attachmentPath);
                                             errResp.setLogDTO(log);
 
-                                            // --- GUARDAR LOG DE ERROR EN MONGO ---
-                                            return reactiveMongoTemplate.save(log)
-                                                    .thenReturn(errResp);
+                                            return Mono.just(errResp);
                                         });
                             });
                 });
@@ -398,13 +387,9 @@ public class ServiceBaja implements IServiceBaja {
     }
 
     public Mono<Long> getNextSequence(String ruc, String fecha, String prefijo) {
-        String key = prefijo + "-" + ruc + "-" + fecha;
-        Query query = Query.query(Criteria.where("_id").is(key));
-        Update update = new Update().inc("seq", 1);
-        FindAndModifyOptions options = FindAndModifyOptions.options().upsert(true).returnNew(true);
-        return reactiveMongoTemplate
-                .findAndModify(query, update, options, Counter.class)
-                .map(Counter::getSeq);
+        return iTransaccionBajaRepository.findFirstByRucEmpresaOrderByFechaDescIddDesc(ruc)
+                .map(tb -> tb.getFecha() != null && tb.getFecha().equals(fecha) ? (long) tb.getIdd() + 1L : 1L)
+                .defaultIfEmpty(1L);
     }
 
     private byte[] compressUBLDocumentv2(byte[] document, String documentName) throws IOException {

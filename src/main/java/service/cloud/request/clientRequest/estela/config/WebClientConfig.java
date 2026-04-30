@@ -1,15 +1,15 @@
 package service.cloud.request.clientRequest.estela.config;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Produces;
 import org.springframework.web.reactive.function.client.WebClient;
 
-@Configuration
+@ApplicationScoped
 public class WebClientConfig {
 
-    @Bean
-    public WebClient webClient(WebClient.Builder webClientBuilder) {
-        return webClientBuilder
+    @Produces
+    public WebClient webClient() {
+        return WebClient.builder()
                 .defaultHeader("Content-Type", "text/xml")
                 .build();
     }

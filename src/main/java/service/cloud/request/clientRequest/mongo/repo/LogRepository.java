@@ -1,9 +1,9 @@
 package service.cloud.request.clientRequest.mongo.repo;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.stereotype.Component;
+import jakarta.enterprise.context.ApplicationScoped;
 import service.cloud.request.clientRequest.mongo.model.Log;
 
-@Component
+@ApplicationScoped
 public interface LogRepository extends MongoRepository<Log, String> {
 }

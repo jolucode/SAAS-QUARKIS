@@ -1,18 +1,18 @@
 package service.cloud.request.clientRequest.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import jakarta.inject.Inject;
+import jakarta.enterprise.context.ApplicationScoped;
 import service.cloud.request.clientRequest.model.Client;
 
 import java.util.Optional;
 
-@Component
+@ApplicationScoped
 public class ProviderProperties {
 
-    @Autowired
+    @Inject
     ApplicationProperties applicationProperties;
 
-    @Autowired
+    @Inject
     ClientProperties clientProperties;
 
     public String getRutaBaseDoc() {

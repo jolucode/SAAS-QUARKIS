@@ -1,0 +1,103 @@
+spring:
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/ventura2024
+      auto-index-creation: true
+
+  mail:
+    host: email-smtp.us-east-1.amazonaws.com
+    port: 587
+    username: AKIA5VTQ6CZ4JBZRBDP3
+    password: BKF5EgoYlFcpSFvfcFnkYrVefNjZ5KNtgAaHYGQ2OZ5q
+    #Nombre de usuario de IAM   #ses-smtp-user.20260430-071504
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+
+scheduled:
+  fixedDelay: 10000
+
+application:
+  env: dev
+  ambiente: 'test'
+  rutas:
+    rutaBaseDoc-anexos: 'C:\clientes\files\'
+    rutaBaseDoc-config: 'C:\clientes\config\'
+  soap-client:
+    sunat:
+      base-url-emision: 'https://e-beta.sunat.gob.pe/ol-ti-itcpfegem-beta/billService'
+      base-url-consulta: 'https://e-factura.sunat.gob.pe/ol-it-wsconscpegem/billConsultService'
+      base-url-retper: 'https://www.sunat.gob.pe/ol-ti-itemision-otroscpe-gem-beta/billService'
+    ose:
+      base-url: 'https://proy.ose.tci.net.pe/ol-ti-itcpe-2/ws/billService?wsdl'
+    estela:
+      base-url: 'https://ose-test.com/ol-ti-itcpe/billService3'
+    bizlinks:
+      base-url: 'https://testose2.bizlinks.com.pe/ol-ti-itcpe/billService?wsdl'
+
+certificate:
+  supplierCertificate: SunJSSE
+  keystoreCertificateType: Pkcs12
+
+ventura:
+  clientes:
+    listaClientes:
+      "20510910517":
+        razonSocial: AGA
+        wsUsuario: admin
+        wsClave: ventura
+        wsLocation: "https://facturacion.venturafe.com/"
+        usuarioSol: "20510910517MODDATOS"
+        claveSol: "QAEUW1YLSD"
+        certificadoName: CERTIFICATE_TEST.pfx
+        certificadoPassword: "1234"
+        integracionWs: ESTELA
+        pdfBorrador: "true"
+        impresion: Codigo QR
+        urlOnpremise: http://34.236.90.115:60125/
+        clientId: a8a6c50a-d73c-4775-9ddc-6s261df69fed8
+        clientSecret: 5yr+sp24Q1J+LeYhnCosoEw==
+        UserNameSunatGuias: 20510s910517JVENTsUR1
+        passwordSunatGuias: JVsENsxsTUR1
+        email:
+          replyTo: "jolubere.92@gmail.com"
+          templateName: "factura-default"
+          enabled: true
+
+      "20422561537":
+        razonSocial: IMPULSO INFORMATICO
+        wsUsuario: admin
+        wsClave: ventura
+        wsLocation: "https://facturacion.venturafe.com/"
+        usuarioSol: "IMPULSO_INFORMATICO_20422561537"
+        claveSol: "IMPULSO_INFORMATICO"
+        certificadoName: CERTIFICATE_TEST_BIZLINKS.pfx
+        certificadoPassword: "B7VUDTzHKFq4pe3z"
+        integracionWs: BIZLINKS
+        pdfBorrador: "true"
+        impresion: Codigo QR
+        urlOnpremise: http://34.236.90.115:60125/
+        clientId: a8a6c50a-d73c-4775-9ddc-6s261df69fed8
+        clientSecret: 5yr+sp24Q1J+LeYhnCosoEw==
+        UserNameSunatGuias: 20422561537JIMPULSO1
+        passwordSunatGuias: IMPULSO1
+        email:
+          replyTo: "jolubere.92@gmail.com"
+          templateName: "factura-default"
+          enabled: true
+
+# ──────────────────────────────────────────────────────────────────
+# Módulo de notificaciones por email
+# Proveedor activo: AWS SES
+# Sandbox: usar como FROM un correo verificado en SES
+# ──────────────────────────────────────────────────────────────────
+notification:
+  provider: SES
+  from: "Prueba AWS SES <jolubere.92@gmail.com>"
+  portalBaseUrl: "https://portal.venturasoluciones.com"
+
+  sendgrid:
+    apiKey: ""
+
+server:
+  port: 8083

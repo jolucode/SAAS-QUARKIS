@@ -1,9 +1,9 @@
 package service.cloud.request.clientRequest.estela.builder;
 
-import org.springframework.stereotype.Component;
+import jakarta.enterprise.context.ApplicationScoped;
 import service.cloud.request.clientRequest.estela.dto.FileRequestDTO;
 
-@Component
+@ApplicationScoped
 public class DocumentBuilder {
 
     // Método para generar la estructura SOAP de emisión con valores dinámicos

@@ -6,11 +6,10 @@ import io.joshworks.restclient.http.Unirest;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.ws.rs.core.Response;
+import jakarta.enterprise.context.ApplicationScoped;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
@@ -39,42 +38,42 @@ import service.cloud.request.clientRequest.utils.files.UtilsFile;
 import java.io.IOException;
 import java.util.*;
 
-@Service
+@ApplicationScoped
 public class CloudService implements CloudInterface {
 
     Logger logger = LoggerFactory.getLogger(CloudService.class);
 
 
-    @Autowired
+    @Inject
     ProviderProperties providerProperties;
 
-    @Autowired
+    @Inject
     PublicacionManager publicacionManager;
 
-    @Autowired
+    @Inject
     NotificationManager notificationManager;
 
-    @Autowired
+    @Inject
     GuiaInterface iServiceEmisionGuia;
 
-    @Autowired
+    @Inject
     IServiceEmision iServiceEmision;
 
-    @Autowired
+    @Inject
     IServiceBaja iServiceBaja;
 
-    @Autowired
+    @Inject
     private ILogService logEntryService;
 
-    @Autowired
+    @Inject
     private IDocumentPublicationService publicarService;
 
-    @Autowired
-    @Qualifier("defaultMapper")
+    @Inject
+    @Named("defaultMapper")
     private ModelMapper mapper;
 
     @Override
-    public Mono<ResponseEntity<Object>> proccessDocument(String stringRequestOnpremise) {
+    public Mono<Response> proccessDocument(String stringRequestOnpremise) {
         String datePattern = Constants.PATTERN_ARRAY_TRANSACTION;
         String updatedJson = stringRequestOnpremise.replaceAll(datePattern, "$1\"");
 
@@ -100,10 +99,10 @@ public class CloudService implements CloudInterface {
                 .onErrorContinue((error, obj) ->
                         logger.warn("Continuando tras error: {} en transacción: {}", error.getMessage(), obj))
                 .then() // Ignorar resultados, solo esperar a que termine
-                .map(ignored -> ResponseEntity.ok().build()) // HTTP 200 OK
+                .map(ignored -> Response.ok().build())
                 .onErrorResume(error -> {
                     logger.error("Error general al procesar documentos: {}", error.getMessage());
-                    return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
+                    return Mono.just(Response.status(Response.Status.INTERNAL_SERVER_ERROR).build());
                 });
     }
 

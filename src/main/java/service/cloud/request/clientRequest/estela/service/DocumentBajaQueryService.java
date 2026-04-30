@@ -3,8 +3,8 @@ package service.cloud.request.clientRequest.estela.service;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import jakarta.inject.Inject;
+import jakarta.enterprise.context.ApplicationScoped;
 import reactor.core.publisher.Mono;
 import service.cloud.request.clientRequest.estela.builder.DocumentBuilder;
 import service.cloud.request.clientRequest.estela.dto.FileRequestDTO;
@@ -16,7 +16,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Slf4j
-@Service
+@ApplicationScoped
 public class DocumentBajaQueryService {
 
     Logger logger = LoggerFactory.getLogger(DocumentBajaQueryService.class);
@@ -25,7 +25,7 @@ public class DocumentBajaQueryService {
 
     private final DocumentBuilder soapRequestBuilder;
 
-    @Autowired
+    @Inject
     public DocumentBajaQueryService(ServiceProxy serviceClient, DocumentBuilder soapRequestBuilder) {
         this.serviceClient = serviceClient;
         this.soapRequestBuilder = soapRequestBuilder;

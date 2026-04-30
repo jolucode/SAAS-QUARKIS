@@ -2,47 +2,47 @@ package service.cloud.request.clientRequest.config;
 
 import lombok.Getter;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Configuration;
+import jakarta.enterprise.context.ApplicationScoped;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import java.util.Arrays;
 import java.util.List;
 
 @Getter
-@Configuration
+@ApplicationScoped
 public class ApplicationProperties {
 
-    @Value("${certificate.supplierCertificate}")
+    @ConfigProperty(name = "certificate.supplierCertificate")
     public String supplierCertificate;
 
-    @Value("${certificate.keystoreCertificateType}")
+    @ConfigProperty(name = "certificate.keystoreCertificateType")
     public String keystoreCertificateType;
 
-    @Value("${application.ambiente}")
+    @ConfigProperty(name = "application.ambiente")
     public String ambiente;
 
-    @Value("${application.rutas.rutaBaseDoc-anexos}")
+    @ConfigProperty(name = "application.rutas.rutaBaseDoc-anexos")
     public String rutaBaseDocAnexos;
 
-    @Value("${application.rutas.rutaBaseDoc-config}")
+    @ConfigProperty(name = "application.rutas.rutaBaseDoc-config")
     public String rutaBaseDocConfig;
 
-    @Value("${application.soap-client.sunat.base-url-emision}")
+    @ConfigProperty(name = "application.soap-client.sunat.base-url-emision")
     public String urlSunatEmision;
 
-    @Value("${application.soap-client.sunat.base-url-consulta}")
+    @ConfigProperty(name = "application.soap-client.sunat.base-url-consulta")
     public String urlSunatConsulta;
 
-    @Value("${application.soap-client.sunat.base-url-retper}")
+    @ConfigProperty(name = "application.soap-client.sunat.base-url-retper")
     public String urlSunatRetencion;
 
-    @Value("${application.soap-client.ose.base-url}")
+    @ConfigProperty(name = "application.soap-client.ose.base-url")
     public String urlOse;
 
-    @Value("${application.soap-client.estela.base-url}")
+    @ConfigProperty(name = "application.soap-client.estela.base-url")
     public String urlEstela;
 
-    @Value("${application.soap-client.bizlinks.base-url}")
+    @ConfigProperty(name = "application.soap-client.bizlinks.base-url")
     public String urlBizlinks;
 
     /**

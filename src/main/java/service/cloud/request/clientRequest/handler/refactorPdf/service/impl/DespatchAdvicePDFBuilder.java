@@ -16,8 +16,8 @@ import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import jakarta.inject.Inject;
+import jakarta.enterprise.context.ApplicationScoped;
 import org.w3c.dom.NodeList;
 import service.cloud.request.clientRequest.dto.dto.TransactionImpuestosDTO;
 import service.cloud.request.clientRequest.dto.dto.TransactionTotalesDTO;
@@ -52,12 +52,12 @@ import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-@Component
+@ApplicationScoped
 public class DespatchAdvicePDFBuilder extends BaseDocumentService implements DespatchAdvicePDFGenerator {
 
     private static final Logger logger = Logger.getLogger(DespatchAdvicePDFBuilder.class);
 
-    @Autowired
+    @Inject
     private JasperReportConfig jasperReportConfig;
 
     String docUUID = "asd";

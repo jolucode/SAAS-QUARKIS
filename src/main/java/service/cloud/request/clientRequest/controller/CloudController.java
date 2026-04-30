@@ -1,21 +1,26 @@
 package service.cloud.request.clientRequest.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import reactor.core.publisher.Mono;
 import service.cloud.request.clientRequest.service.extractor.CloudService;
 
-@RestController()
+@Path("/")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
 public class CloudController {
 
-    @Autowired
+    @Inject
     private CloudService cloudService;
 
-    @PostMapping("/procesar")
-    public Mono<ResponseEntity<Object>> processDocument(@RequestBody String stringRequestOnpremise) {
+    @POST
+    @Path("/procesar")
+    public Mono<Response> processDocument(String stringRequestOnpremise) {
         return cloudService.proccessDocument(stringRequestOnpremise);
     }
 }

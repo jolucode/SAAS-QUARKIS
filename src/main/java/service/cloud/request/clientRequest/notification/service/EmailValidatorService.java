@@ -2,11 +2,11 @@ package service.cloud.request.clientRequest.notification.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
+import jakarta.enterprise.context.ApplicationScoped;
 
 import java.util.regex.Pattern;
 
-@Service
+@ApplicationScoped
 public class EmailValidatorService {
 
     private static final Logger log = LoggerFactory.getLogger(EmailValidatorService.class);

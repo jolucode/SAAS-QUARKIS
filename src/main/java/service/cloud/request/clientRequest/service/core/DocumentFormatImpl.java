@@ -2,8 +2,8 @@ package service.cloud.request.clientRequest.service.core;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import jakarta.inject.Inject;
+import jakarta.enterprise.context.ApplicationScoped;
 import service.cloud.request.clientRequest.dto.dto.TransacctionDTO;
 import service.cloud.request.clientRequest.dto.dto.TransactionTotalesDTO;
 import service.cloud.request.clientRequest.dto.finalClass.ConfigData;
@@ -18,30 +18,30 @@ import service.cloud.request.clientRequest.utils.exception.error.IVenturaError;
 import java.util.ArrayList;
 import java.util.List;
 
-@Component
+@ApplicationScoped
 public class DocumentFormatImpl implements DocumentFormatInterface {
 
     Logger logger = LoggerFactory.getLogger(DocumentFormatImpl.class);
 
-    @Autowired
+    @Inject
     InvoicePDFBuilder invoiceBuilder;
 
-    @Autowired
+    @Inject
     BoletaPDFBuilder boletaBuilder;
 
-    @Autowired
+    @Inject
     CreditNotePDFBuilder ncBuilder;
 
-    @Autowired
+    @Inject
     DebitNotePDFBuilder ndBuilder;
 
-    @Autowired
+    @Inject
     PerceptionPDFBuilder percepcionBuilder;
 
-    @Autowired
+    @Inject
     RetentionPDFBuilder retencionBuilder;
 
-    @Autowired
+    @Inject
     DespatchAdvicePDFBuilder despatchAdviceBuilder;
 
     @Override

@@ -1,7 +1,7 @@
 package service.cloud.request.clientRequest.estela.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import jakarta.inject.Inject;
+import jakarta.enterprise.context.ApplicationScoped;
 import reactor.core.publisher.Mono;
 import service.cloud.request.clientRequest.estela.builder.DocumentBuilder;
 import service.cloud.request.clientRequest.estela.dto.FileRequestDTO;
@@ -12,14 +12,14 @@ import java.util.Base64;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-@Service
+@ApplicationScoped
 public class DocumentQueryService {
 
     private final ServiceProxy serviceClient;
 
     private final DocumentBuilder soapRequestBuilder;
 
-    @Autowired
+    @Inject
     public DocumentQueryService(ServiceProxy serviceClient, DocumentBuilder soapRequestBuilder) {
         this.serviceClient = serviceClient;
         this.soapRequestBuilder = soapRequestBuilder;

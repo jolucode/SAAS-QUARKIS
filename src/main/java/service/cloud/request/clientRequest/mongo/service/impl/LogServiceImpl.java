@@ -1,14 +1,14 @@
 package service.cloud.request.clientRequest.mongo.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import jakarta.enterprise.context.ApplicationScoped;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import service.cloud.request.clientRequest.mongo.model.Log;
 import service.cloud.request.clientRequest.mongo.repo.ILogRepo;
 import service.cloud.request.clientRequest.mongo.service.ILogService;
 
-@Service
+@ApplicationScoped
 @RequiredArgsConstructor
 public class LogServiceImpl implements ILogService {
 

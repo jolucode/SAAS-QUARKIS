@@ -8,8 +8,8 @@ import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import jakarta.inject.Inject;
+import jakarta.enterprise.context.ApplicationScoped;
 import service.cloud.request.clientRequest.dto.dto.*;
 import service.cloud.request.clientRequest.dto.finalClass.ConfigData;
 import service.cloud.request.clientRequest.dto.wrapper.UBLDocumentWRP;
@@ -32,12 +32,12 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-@Component
+@ApplicationScoped
 public class CreditNotePDFBuilder extends BaseDocumentService implements CreditNotePDFGenerator {
 
     private static final Logger logger = Logger.getLogger(CreditNotePDFBuilder.class);
 
-    @Autowired
+    @Inject
     private JasperReportConfig jasperReportConfig;
 
     String docUUID = "asd";
